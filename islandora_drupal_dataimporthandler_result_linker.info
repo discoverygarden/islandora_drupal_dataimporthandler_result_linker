@@ -1,0 +1,6 @@
+name = Islandora Drupal Solr DataImportHandler Result Linker
+description = A module to alter results to link to relevant Drupal content.
+package = Islandora Search
+core = "7.x"
+version = "7.x-dev"
+dependencies[] = islandora_solr

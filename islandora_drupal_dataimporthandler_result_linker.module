@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for the altering of Islandora Solr results.
+ */
+
+/**
+ * Implements hook_drupal_nodecmodel_islandora_solr_object_result_alter().
+ */
+function islandora_drupal_dataimporthandler_result_linker_drupal_nodecmodel_islandora_solr_object_result_alter(&$result, $query_processor) {
+  $prefix = 'drupal-node-content:';
+  if (strpos($result['PID'], $prefix) === 0) {
+    $nid = substr($result['PID'], strlen($prefix));
+    $node = node_load($nid);
+
+    $result['object_label'] = $node->title;
+    $result['object_url'] = "node/$nid";
+    $result['object_url_params'] = array();
+
+    // Set a default image to output.
+    $result['thumbnail_url'] = file_create_url(drupal_get_path('module', 'islandora') . '/images/folder.png');
+    $result['thumbnail_url_params'] = array();
+  }
+}
+
+/**
+ * Implements hook_drupal_usercmodel_islandora_solr_object_result_alter().
+ */
+function islandora_drupal_dataimporthandler_result_linker_drupal_usercmodel_islandora_solr_object_result_alter(&$result, $query_processor) {
+  $prefix = 'drupal-user:';
+  if (strpos($result['PID'], $prefix) === 0) {
+    $uid = substr($result['PID'], strlen($prefix));
+    $user = user_load($uid);
+
+    $result['object_label'] = $user->name;
+    $result['object_url'] = "user/$uid";
+    $result['object_url_params'] = array();
+    if (isset($user->picture)) {
+      $result['thumbnail_url'] = file_create_url($user->picture->uri);
+      $result['thumbnail_url_params'] = array();
+    }
+    else {
+      // TODO: Get/set a better default image to output.
+      $result['thumbnail_url'] = file_create_url(drupal_get_path('module', 'islandora') . '/images/folder.png');
+      $result['thumbnail_url_params'] = array();
+    }
+  }
+}
